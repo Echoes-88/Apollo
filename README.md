@@ -57,6 +57,9 @@ const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
 - En faisant un update du cache directement (évite une requête vers le serveur)
 
 ```TS
+
+// Mutation + update du cache
+
 const GET_TODOS = gql`
   query GetTodos {
     todos {
@@ -92,6 +95,9 @@ function AddTodo() {
 OU
 
 ```TS
+
+// update du cache seul si la mutation est effectué ailleurs
+
     const updateCache = (user: Unpack<GetUsersQuery['users']['data']>) => {
         client.cache.updateQuery<GetUsersQuery, GetUsersQueryVariables>(
             { query: GetUsersDocument, variables: { filter } },
