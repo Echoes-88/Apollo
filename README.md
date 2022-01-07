@@ -38,9 +38,58 @@ const [addCount, { data, loading, error }] = useMutation(INCREMENT_COUNTER, {
 });
 ```
 
-## Update query cache
+## MISE A JOUR DU FRONT APRES UNE MUTATION
 
-Après une mutation il est possible de faire un update da la query dans le cache afin d'éviter un refetch vers le serveur
+Il existe plusieurs méthodes pour mettre à jour le front suite à la mutation (modification du backend)
+
+- En effectuant un refetch 
+
+```TS
+// Refetches two queries after mutation completes
+const [addTodo, { data, loading, error }] = useMutation(ADD_TODO, {
+  refetchQueries: [
+    GET_POST, // DocumentNode object parsed with gql
+    'GetComments' // Query name
+  ],
+});
+````
+
+- En faisant un update du cache directement (évite une requête vers le serveur)
+
+```TS
+const GET_TODOS = gql`
+  query GetTodos {
+    todos {
+      id
+    }
+  }
+`;
+
+function AddTodo() {
+  let input;
+  const [addTodo] = useMutation(ADD_TODO, {
+    update(cache, { data: { addTodo } }) {
+      cache.modify({
+        fields: {
+          todos(existingTodos = []) {
+            const newTodoRef = cache.writeFragment({
+              data: addTodo,
+              fragment: gql`
+                fragment NewTodo on Todo {
+                  id
+                  type
+                }
+              `
+            });
+            return [...existingTodos, newTodoRef];
+          }
+        }
+      });
+    }
+  });
+```
+
+OU
 
 ```TS
     const updateCache = (user: Unpack<GetUsersQuery['users']['data']>) => {
@@ -60,21 +109,5 @@ Après une mutation il est possible de faire un update da la query dans le cache
         );
     };
 ```
-Autre exemple plus générique :
-```TS
-// Query to fetch all todo items
-const query = gql`
-  query MyTodoAppQuery {
-    todos {
-      id
-      text
-      completed
-    }
-  }
-`;
 
-// Set all todos in the cache as completed
-cache.updateQuery({ query }, (data) => ({
-  todos: data.todos.map((todo) => ({ ...todo, completed: true }))
-}));
-```
+! Parfois on veut s'assurer que le refetch a bien été effectué partout ou necessaire : voir "Refetching after update" dans la doc
