@@ -17,11 +17,9 @@ const [addTodo, { data, loading, error }] = useMutation(ADD_TODO);
 
   return (
       <button
-        onSubmit={e => {
-          e.preventDefault();
+        onClick={() => 
           addTodo({ variables: {id: "2212b", text: "nouveau texte" } });
-          input.value = '';
-        }}
+        }
       >
         Add todo
       </button>
