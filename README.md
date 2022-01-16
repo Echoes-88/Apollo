@@ -1,5 +1,42 @@
 # Apollo
 
+## Query
+```JS
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+
+const GET_DOGS = gql`
+  {
+    dogs {
+      id
+      breed
+    }
+  }
+`;
+```
+
+```JS
+function Dogs({ onDogSelected }) {
+  const { loading, error, data } = useQuery(GET_DOGS);
+
+  if (loading) return 'Loading...';
+  if (error) return `Error! ${error.message}`;
+
+  return (
+    <select name="dog" onChange={onDogSelected}>
+      {data.dogs.map(dog => (
+        <option key={dog.id} value={dog.breed}>
+          {dog.breed}
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+**Caching query results**
+Whenever Apollo Client fetches query results from your server, it automatically caches those results locally. This makes subsequent executions of the same query extremely fast.
+
 ## Mutations
 ```TS
 const ADD_TODO = gql`
