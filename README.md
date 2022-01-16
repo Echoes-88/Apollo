@@ -70,6 +70,34 @@ cache.writeData({
 });
 ```
 
+**Reset store with onResetStore**
+
+Sometimes you may need to reset the store in your application, when a user logs out for example. See below of this code.
+
+```JS
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+
+const cache = new InMemoryCache();
+const client = new ApolloClient({
+  cache,
+  resolvers: { /* ... */ },
+});
+
+const data = {
+  todos: [],
+  visibilityFilter: 'SHOW_ALL',
+  networkStatus: {
+    __typename: 'NetworkStatus',
+    isConnected: false,
+  },
+};
+
+cache.writeData({ data });
+
+client.onResetStore(() => cache.writeData({ data }));
+```
+
 **Write in cache**
 
 ```JS
