@@ -42,9 +42,35 @@ Whenever Apollo Client fetches query results from your server, it automatically 
 
 A la manière de redux il est possible d'utiliser le cache Apollo comme un store et d'y stocker du contenu
 
-**Write in cache**
-
 Source : https://www.apollographql.com/docs/react/v2/data/local-state/
+
+**Initializing the cache**
+
+Often, you'll need to write an initial state to the cache so any components querying data before a mutation is triggered don't error out.
+
+```JS
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+
+const cache = new InMemoryCache();
+const client = new ApolloClient({
+  cache,
+  resolvers: { /* ... */ },
+});
+
+cache.writeData({
+  data: {
+    todos: [],
+    visibilityFilter: 'SHOW_ALL',
+    networkStatus: {
+      __typename: 'NetworkStatus',
+      isConnected: false,
+    },
+  },
+});
+```
+
+**Write in cache**
 
 ```JS
 import React from "react";
@@ -64,6 +90,39 @@ function FilterLink({ filter, children }) {
 }
 ```
 
+**Get data from cache**
+
+Querying for local data is very similar to querying your GraphQL server. The only difference is that you add a @client directive on your local fields to indicate they should be resolved from the Apollo Client cache or a local resolver function. Let's look at an example:
+
+```JS
+import React from "react";
+import { useQuery } from "@apollo/react-hooks";
+import gql from "graphql-tag";
+
+import Todo from "./Todo";
+
+const GET_TODOS = gql`
+  {
+    todos @client {
+      id
+      completed
+      text
+    }
+    visibilityFilter @client
+  }
+`;
+
+function TodoList() {
+  const { data: { todos, visibilityFilter } } = useQuery(GET_TODOS);
+  return (
+    <ul>
+      {getVisibleTodos(todos, visibilityFilter).map(todo => (
+        <Todo key={todo.id} {...todo} />
+      ))}
+    </ul>
+  );
+}
+```
 
 ## Mutations
 ```TS
