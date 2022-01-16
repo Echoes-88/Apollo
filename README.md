@@ -62,10 +62,6 @@ cache.writeData({
   data: {
     todos: [],
     visibilityFilter: 'SHOW_ALL',
-    networkStatus: {
-      __typename: 'NetworkStatus',
-      isConnected: false,
-    },
   },
 });
 ```
