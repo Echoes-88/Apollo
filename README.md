@@ -62,6 +62,7 @@ cache.writeData({
   data: {
     todos: [],
     visibilityFilter: 'SHOW_ALL',
+    ...etc
   },
 });
 ```
@@ -83,10 +84,7 @@ const client = new ApolloClient({
 const data = {
   todos: [],
   visibilityFilter: 'SHOW_ALL',
-  networkStatus: {
-    __typename: 'NetworkStatus',
-    isConnected: false,
-  },
+  ...etc
 };
 
 cache.writeData({ data });
