@@ -35,7 +35,35 @@ function Dogs({ onDogSelected }) {
 ```
 
 **Caching query results**
+
 Whenever Apollo Client fetches query results from your server, it automatically caches those results locally. This makes subsequent executions of the same query extremely fast.
+
+## Local State Management
+
+A la manière de redux il est possible d'utiliser le cache Apollo comme un store et d'y stocker du contenu
+
+**Write in cache**
+
+Source : https://www.apollographql.com/docs/react/v2/data/local-state/
+
+```JS
+import React from "react";
+import { useApolloClient } from "@apollo/react-hooks";
+
+import Link from "./Link";
+
+function FilterLink({ filter, children }) {
+  const client = useApolloClient();
+  return (
+    <Link
+      onClick={() => client.writeData({ data: { visibilityFilter: filter } })}
+    >
+      {children}
+    </Link>
+  );
+}
+```
+
 
 ## Mutations
 ```TS
